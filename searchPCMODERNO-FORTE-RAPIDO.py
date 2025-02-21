@@ -46,12 +46,21 @@ def buscar_em_arquivos(padrao):
     arquivos_txt = [os.path.join(pasta, f) for f in os.listdir(pasta) if f.endswith('.txt')]
     return buscar_em_arquivos_paralelo(padrao, arquivos_txt)
 
+def limpar_caracteres_invalidos(nome_arquivo):
+    """Remove caracteres inválidos do nome do arquivo e evita que comece com ponto."""
+    nome_arquivo = re.sub(r'[\\/*?:"<>|]', '_', nome_arquivo)  # Substitui caracteres inválidos por "_"
+    nome_arquivo = re.sub(r'^[.]', '', nome_arquivo)  # Remove ponto no início do nome
+    return nome_arquivo
+
 def salvar_resultados(padrao, resultados):
     """Salva os resultados encontrados em um arquivo na pasta 'ENCONTRADO'."""
     pasta_resultados = os.path.join(os.getcwd(), 'ENCONTRADO')
     os.makedirs(pasta_resultados, exist_ok=True)
 
-    arquivo_resultado = os.path.join(pasta_resultados, f"{padrao}.txt")
+    # Limpar caracteres especiais do nome do arquivo
+    nome_arquivo = limpar_caracteres_invalidos(padrao)
+
+    arquivo_resultado = os.path.join(pasta_resultados, f"{nome_arquivo}.txt")
     with open(arquivo_resultado, 'w', encoding='utf-8') as f:
         f.write("\n".join(resultados))
 
